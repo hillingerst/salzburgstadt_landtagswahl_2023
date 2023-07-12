@@ -1,0 +1,63 @@
+http://www.polres.gr/en/vtr
+
+Download file VTR.R and save it to your working directory.
+
+To run the program you will need two matrices X,T and one vector N. We denote X the rxm matrix that consists of the elements fik i.e. the relative power of party i in precinct k in e1.T is the cxm matrix that consists of the elements sjk i.e. the relative power of party j in precinct k in e2. Vector N=(n1,n2,…,nm) consists of the number of voters in each precinct.
+
+If you are not familiar with R the best approach is to prepare your data in a CSV file (CSV files can be prepared with Microsoft Excel using the "Save as" command and selecting the CSV file type) Save the CSV file in your working directory (the same directory you have used to store the file VTR.R) As an example, you can download the file br9701.csv which includes constituency results for the 1997 and 2001 general elections(England, Scotland, and Wales)
+
+1. Start R
+
+2. File - changedir and select your working directory
+
+3. File - source Rcode (VTR.R)
+
+4 . Type the following commands
+
+mydata <- read.csv2("br9701.csv")
+
+With this command you read your data into R read.csv and read.csv2 are almost identical. They are intended for reading “comma separated value” files (‘ .csv ’). The variant (read.csv2) is used in countries that use a comma as decimal point and a semicolon as field separator. If you use comma as field separator you should use read.csv instead of read.csv2 and write.csv instead of write.csv2 (see below).
+
+myN<-mydata[1]
+
+myT<-mydata[2:11]
+
+myX<-mydata[12:19]
+
+With these commands you define the initial N as the first column of your data, T as the table stored in columns 2-11 and X as the table stored in columns from 12-19. Of course if your file is structured in a different way you should adjust for it by changing the corresponding columns.
+
+5.Now you are ready to run the code and store the results to an R object, i.e. z
+
+z<-multirate(myN,myX,myT,0.01)
+
+The arithmetic parameter defines the fraction of the populations that will remain unexplained. In practice, typical fraction values we could use are the values 0.05, 0.01. These values mean that the method would estimate 95% and 99% of the voter transitions correspondingly. In case we need more accurate estimates we could use smaller values i.e. 0.001 but this would require longer time for the execution of the code.
+
+After the execution of the code we can print the general voter transition matrix withthe command:
+
+z$Bb
+
+or we can save the matrix to a CSV file with the command (or write.csv)
+
+write.csv2(z$Bb, file="brVTR.csv")
+
+We can print the whole array of constituency voter transitions with the command
+
+z$bb
+
+It is more useful to print constituency voter transition rates for a pair ofparties with the commands
+
+as.matrix(z$bb[,"CON97","CON01"])
+
+(using the column names)
+
+as.matrix(z$bb[,2,2])
+
+(using the column numbers)
+
+or we can save them to a CSV file with the command (or write.csv)
+
+write.csv2(as.matrix(z$bb[,"CON97","CON01"]),file="CON9701.csv", row.names=F)
+
+If you use the algorithm, please cite with the following text:
+
+Andreadis, I. and Chadjipadelis, T. (2009). A method for the estimation of voter transition rates. Journal of Elections, Public Opinion and Parties 
